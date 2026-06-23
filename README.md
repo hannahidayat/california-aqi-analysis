@@ -92,20 +92,21 @@ Los Angeles counties had the worst air quality overall.
 
 Formulas used:
 
-$percent\_days\_not\_good = \frac{Days.with.AQI - Good.Days}{Days.with.AQI} * 100$
+percent_days_not_good=$\frac{Days.with.AQI-Good.Days}{Days.with.AQI}*100$
 
-$composite\_score = \frac{rank\_severity + rank\_duration}{2}$ //
-$rank\_severity = rank(Median.AQI)$,
-$rank\_duration = rank(percent\_days\_not\_good)$
+composite_score=$\frac{rank.severity+rank.duration}{2}$
+
+rank.severity=rank(Median.AQI),
+rank.duration=rank(percent_days_not_good)
 
 ## Air pollutants
 
 ![](README_files/figure-gfm/chem-profile-1.png)<!-- -->
 
-Three criteria air pollutants were focused on: NO$_{2}$, Ozone, and
-PM$_{2.5}$. For the three highest-burden counties, percentages were
-calculated by dividing the number of days each pollutant was present
-with the number of days of air quality monitoring.
+Three criteria air pollutants were focused on: NO2, Ozone, and PM2.5.
+For the three highest-burden counties, percentages were calculated by
+dividing the number of days each pollutant was present with the number
+of days of air quality monitoring.
 
 Ozone had the highest percentage among the days of poor air quality. The
 pollutant is not emitted directly by emissions from nearby industrial
@@ -113,17 +114,17 @@ centers and traffic, but through intense heat and sunlight baking the
 chemicals. Such pollution gets carried inland through coastal winds and
 gets trapped against the mountain ranges.
 
-PM$_{2.5}$ represents any particulate matter less than 2.5 micrometers
-in diameter. This pollutant often comes from sources such as wildfires,
+PM2.5 represents any particulate matter less than 2.5 micrometers in
+diameter. This pollutant often comes from sources such as wildfires,
 diesel emissions, and industrial power plants where carbon soot and
 metal particulates are released. It is much more dangerous than Ozone in
 that it increases higher rates of chronic respiratory illnesses and
 reduced life expectancy as a multi-organ toxin.
 
-NO$_{2}$ or Nitrogen Dioxide is the lowest pollutant of the three,
-because it is reactive and transforms to form Ozone or PM$_{2.5}$. It’s
-a precursor to the dominant pollutants often from traffic emissions and
-fossil fuels use.
+NO2 or Nitrogen Dioxide is the lowest pollutant of the three, because it
+is reactive and transforms to form Ozone or PM2.5. It’s a precursor to
+the dominant pollutants often from traffic emissions and fossil fuels
+use.
 
 ## Sensitive Groups
 
