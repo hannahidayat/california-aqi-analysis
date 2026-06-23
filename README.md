@@ -92,9 +92,11 @@ Los Angeles counties had the worst air quality overall.
 
 Formulas used:
 
-$\text{percent\_days\_not\_good} = \frac{\text{Days.with.AQI} - \text{Good.Days}}{\text{Days.with.AQI}} \times 100$
+`percent_days_not_good` =
+$\frac{\text{Days.with.AQI} - \text{Good.Days}}{\text{Days.with.AQI}} \times 100$
 
-$\text{composite\_score} = \frac{\text{rank.severity} + \text{rank.duration}}{2}$
+`composite_score` =
+$\frac{\text{rank.severity} + \text{rank.duration}}{2}$
 
 $\text{rank.severity} = \text{rank}(\text{Median.AQI})$,
 $\text{rank.duration} = \text{rank}(\text{percent\_days\_not\_good})$
