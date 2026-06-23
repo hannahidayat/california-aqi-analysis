@@ -2,14 +2,19 @@ library(tidyverse)
 library(sf)
 
 #read data
+## ---- load-california
 aqi <- read.csv("data/annual_aqi_by_county_2025.csv")
 
 #filter for california
 California_aqi <- dplyr::filter(aqi, State =="California")
-View(California_aqi)
+knitr::kable(California_aqi)
 
 
+## ---- worst-counties
 # find worst counties for air quality (top 3)
+aqi <- read.csv("data/annual_aqi_by_county_2025.csv")
+California_aqi <- dplyr::filter(aqi, State =="California")
+
 top_3_counties_worst <- California_aqi %>%
   mutate(
     percent_days_not_good = ((Days.with.AQI - Good.Days) / Days.with.AQI) * 100,
@@ -21,8 +26,10 @@ top_3_counties_worst <- California_aqi %>%
   arrange(desc(composite_score)) %>%
   head(3)
 
-print(top_3_counties_worst)
+knitr::kable(top_3_counties_worst, align = "lccccc")
 
+
+## ---- chem-profile
 # find out why these counties are worst through chemical profile 
 top_worst <- top_3_counties_worst$County
 
@@ -36,8 +43,6 @@ chemical_ratio <- California_aqi %>%
   select(County, NO2, PM2.5, Ozone) %>%
   arrange(desc(Ozone))
 
-print(chemical_ratio)
-
 # create a chemical profile visual 
 chart_data_long <- chemical_ratio %>%
   pivot_longer(
@@ -48,7 +53,7 @@ chart_data_long <- chemical_ratio %>%
 
 ggplot(data = chart_data_long, aes(x = Pollutant, y = County, fill = Percentage)) +
   
-  geom_tile(color = "white", size = 0.5) +
+  geom_tile(color = "white", linewidth = 0.5) +
   
   geom_text(aes(label = paste0(round(Percentage, 1), "%")), 
             color = "black", fontface = "bold", size = 4) +
@@ -65,13 +70,14 @@ ggplot(data = chart_data_long, aes(x = Pollutant, y = County, fill = Percentage)
   ) +
   
   labs(
-    x = "Chemical Driver",
+    x = "Pollutant",
     y = "Hotspot County",
     title = "California Air Quality Profile Comparison",
     subtitle = "Frequency concentration mapping (2025) - US EPA AirData"
   )
 
 
+## ---- sensitive-groups
 # compare unhealthy days for sensitive groups of 3 counties vs rest of california 
 California_aqi <- California_aqi %>%
   mutate(is_top_3 = if_else(County %in% top_worst, "Top 3 Hotspots", "Rest of California"))
@@ -88,6 +94,8 @@ multiplier <- avg_top3 / avg_rest
 
 print(paste("The top 3 hotspot counties experience", round(multiplier, 1), "times more toxic days for sensitive groups than the rest of California."))
 
+
+## ---- sensitive-viz
 # visual comparison of days for USG
 simple_chart_data <- California_aqi %>%
   filter(!is.na(Unhealthy.for.Sensitive.Groups.Days)) %>%

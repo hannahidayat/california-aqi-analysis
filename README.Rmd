@@ -1,30 +1,102 @@
 ---
-title: "Untitled"
+title: "California Air Quality"
 output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(sf)
+```
+```{r, include=FALSE}
+knitr::read_chunk("epa_airdata_aqi.R")
 ```
 
-## GitHub Documents
+## Introduction 
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+I aimed to explore environmental data while becoming familiar with R/RStudio tools. I retrieved 2025 summary data from the [US Environmental Protection Agency](https://aqs.epa.gov/aqsweb/airdata/download_files.html#Annual) and completed exploratory analysis regarding air quality monitoring. I became interested in air quality data as I grew up in the Inland Empire region of Southern California, and have always been sensitive to outside conditions including experiencing allergies, difficulty breathing, and skin issues. It was a great opportunity to examine a topic that affects public health as well as quality of life.        
 
-## Including Code
 
-You can include R code in the document as follows:
+## Filtering data 
 
-```{r cars}
-summary(cars)
+The first thing to do was to filter out data for California counties. 
+
+
+```{r load-california, echo=FALSE}
 ```
 
-## Including Plots
+However, out of 58 total counties, there are 12 missing in the dataset, notably Bay Area counties. Missing urban counties: Alameda, Contra Costa, Napa, San Francisco, San Mateo, and Santa Clara. Missing rural counties: Alpine, Lassen, Mendocino, Modoc, Sierra, Yuba. As these counties are not included in the original dataset, findings are not fully representative of statewide conditions.   
 
-You can also embed plots, for example:
+## Highest-burden counties 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r worst-counties, fig.align='center', echo=FALSE}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+A composite score was calculated for each county to find those with the worst air quality overall. The two categories, Median AQI (which represents the typical daily air quality) and the percentage of days with a worse than "Good" air quality, were ranked and then averaged together to create the composite score. The top three counties were ordered from highest score descending. Riverside, San Bernardino, and Los Angeles counties had the worst air quality overall. 
+
+Formulas used: 
+
+$percent\_days\_not\_good = \frac{Days.with.AQI - Good.Days}{Days.with.AQI} * 100$ 
+
+$composite\_score = \frac{rank\_severity + rank\_duration}{2}$ //
+$rank\_severity = rank(Median.AQI)$, $rank\_duration = rank(percent\_days\_not\_good)$ 
+
+## Air pollutants 
+```{r chem-profile, echo=FALSE}
+aqi <- read.csv("data/annual_aqi_by_county_2025.csv")
+California_aqi <- dplyr::filter(aqi, State =="California")
+
+top_3_counties_worst <- California_aqi %>%
+  mutate(
+    percent_days_not_good = ((Days.with.AQI - Good.Days) / Days.with.AQI) * 100,
+    rank_severity = rank(Median.AQI),
+    rank_duration = rank(percent_days_not_good),
+    composite_score = (rank_severity + rank_duration) / 2
+  ) %>%
+  select(County, Median.AQI, Good.Days, Days.with.AQI, percent_days_not_good, composite_score) %>%
+  arrange(desc(composite_score)) %>%
+  head(3)
+
+```
+
+Three criteria air pollutants were focused on: NO$_{2}$, Ozone, and PM$_{2.5}$. For the three highest-burden counties, percentages were calculated by dividing the number of days each pollutant was present with the number of days of air quality monitoring. 
+
+Ozone had the highest percentage among the days of poor air quality. The pollutant is not emitted directly by emissions from nearby industrial centers and traffic, but through intense heat and sunlight baking the chemicals. Such pollution gets carried inland through coastal winds and gets trapped against the mountain ranges.
+
+PM$_{2.5}$ represents any particulate matter less than 2.5 micrometers in diameter. This pollutant often comes from sources such as wildfires, diesel emissions, and industrial power plants where carbon soot and metal particulates are released. It is much more dangerous than Ozone in that it increases higher rates of chronic respiratory illnesses and reduced life expectancy as a multi-organ toxin.
+
+NO$_{2}$ or Nitrogen Dioxide is the lowest pollutant of the three, because it is reactive and transforms to form Ozone or PM$_{2.5}$. It's a precursor to the dominant pollutants often from traffic emissions and fossil fuels use. 
+
+## Sensitive Groups 
+```{r sensitive-groups, echo=TRUE}
+aqi <- read.csv("data/annual_aqi_by_county_2025.csv")
+California_aqi <- dplyr::filter(aqi, State =="California")
+
+top_3_counties_worst <- California_aqi %>%
+  mutate(
+    percent_days_not_good = ((Days.with.AQI - Good.Days) / Days.with.AQI) * 100,
+    rank_severity = rank(Median.AQI),
+    rank_duration = rank(percent_days_not_good),
+    composite_score = (rank_severity + rank_duration) / 2
+  ) %>%
+  select(County, Median.AQI, Good.Days, Days.with.AQI, percent_days_not_good, composite_score) %>%
+  arrange(desc(composite_score)) %>%
+  head(3)
+
+top_worst <- top_3_counties_worst$County
+```
+
+Using the column **Unhealthy.for.Sensitive.Groups.Days** from the dataset, a risk comparison was calculated to compare the counties with the worst air quality with the rest of California by finding the averages and calculating the risk multiplier. While a 16.8x difference in exposure is a meaningful disparity, results may be sensitive due to the small hotspot sample size (3 counties) and the remaining 43 counties. The estimate may be influenced due to extreme values in one or more counties. 
+
+The disparity does express that exposure risk is disproportionately clustered in specific areas of the state, where the pollution burden repeatedly exposes vulnerable populations such as people with chronic illness, older adults, and children. 
+
+<br>
+
+```{r sensitive-viz, echo=FALSE}
+aqi <- read.csv("data/annual_aqi_by_county_2025.csv")
+California_aqi <- dplyr::filter(aqi, State =="California")
+```
+
+## Summary 
+
+There are systemic inequalities facing the state of California regarding access to healthy air quality, which will continue to impact future generations of people who live in hotspot counties. Findings emphasize the importance of developing solutions to reduce emissions and pollution exposure, as well as taking action towards more air quality initiatives and environmental regulatory policy. Educational outreach is also fundamental in protecting sensitive populations by providing access to health knowledge, medical resources, and to reduce exposure risk. 
