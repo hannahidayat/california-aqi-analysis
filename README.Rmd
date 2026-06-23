@@ -36,10 +36,10 @@ A composite score was calculated for each county to find those with the worst ai
 
 Formulas used: 
 
-$percent\_days\_not\_good=\frac{Days.with.AQI-Good.Days}{Days.with.AQI}*100$ 
+$percent\_{days}\_{not}\_{good}=\frac{Days.with.AQI-Good.Days}{Days.with.AQI}*100$ 
 
-$composite\_score=\frac{rank\_severity+rank\_duration}{2}$ //
-$rank\_severity=rank(Median.AQI)$,$rank\_duration=rank(percent\_days\_not\_good)$ 
+$composite\_{score}=\frac{rank\_{severity}+rank\_{duration}{2}$ //
+$rank\_{severity}=rank(Median.AQI)$,$rank\_{duration}=rank(percent\_{days}\_{not}\_{good})$ 
 
 ## Air pollutants 
 ```{r chem-profile, echo=FALSE}
