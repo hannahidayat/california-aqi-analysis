@@ -98,9 +98,9 @@ $\frac{\text{Days.with.AQI} - \text{Good.Days}}{\text{Days.with.AQI}} \times 100
 `composite_score` =
 $\frac{\text{rank.severity} + \text{rank.duration}}{2}$
 
-`rank.severity` = $\text{rank}(\text{Median.AQI})$
+`rank.severity` = rank(Median.AQI)
 
-`rank.duration` = $\text{rank}(\text{percent\_days\_not\_good})$
+`rank.duration` = rank(percent_days_not_good)
 
 ## Air pollutants
 
